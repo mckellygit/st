@@ -10,6 +10,15 @@ static char *font2[] = { "JoyPixels:pixelsize=10:antialias=true:autohint=true" }
 static int borderpx = 2;
 
 /*
+ * my ~/.Xresource defaults:
+ * st.font:       Liberation Mono:pixelsize=22:antialias=true:autohint=true
+ * st.alpha:      0.96
+ * st.foreground: #c5c5c5
+ * st.background: #2e2e26
+ * geometry:      164x48+854+856 (not an X resource)
+ */
+
+/*
  * What program is execed by st depends of these precedence rules:
  * 1: program passed with -e
  * 2: scroll and/or utmp
@@ -17,7 +26,7 @@ static int borderpx = 2;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char *shell = "/bin/sh";
+static char *shell = "/bin/bash";
 char *utmp = NULL;
 /* scroll program: to enable use a string like "scroll" */
 char *scroll = NULL;
@@ -42,7 +51,7 @@ static unsigned int doubleclicktimeout = 300;
 static unsigned int tripleclicktimeout = 600;
 
 /* alt screens */
-int allowaltscreen = 1;
+int allowaltscreen = 0;
 
 /* allow certain non-interactive (insecure) window operations such as:
    setting the clipboard text */
@@ -146,13 +155,20 @@ unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;
 
 /*
- * Default shape of cursor
- * 2: Block ("█")
- * 4: Underline ("_")
- * 6: Bar ("|")
- * 7: Snowman ("☃")
- */
-static unsigned int cursorshape = 2;
+ * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Ps-SP-q.1D81
+ * Default style of cursor
+ * 0: Blinking block
+ * 1: Blinking block (default)
+ * 2: Steady block ("█")
+ * 3: Blinking underline
+ * 4: Steady underline ("_")
+ * 5: Blinking bar
+ * 6: Steady bar ("|")
+ * 7: Blinking st cursor
+ * 8: Steady st cursor
+  */
+static unsigned int cursorstyle = 1;
+static Rune stcursor = 0x2603; /* snowman (U+2603) */
 
 /*
  * Default columns and rows numbers
@@ -219,6 +235,15 @@ ResourcePref resources[] = {
 		{ "alpha",        FLOAT,   &alpha },
 };
 
+/* Internal keyboard shortcuts. */
+#define MODKEY Mod1Mask
+#define TERMMOD (Mod1Mask|ShiftMask)
+#define CTRLMOD (ControlMask|ShiftMask)
+
+static char *openurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -o", "externalpipe", NULL };
+static char *copyurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -c", "externalpipe", NULL };
+static char *copyoutput[] = { "/bin/sh", "-c", "st-copyout", "externalpipe", NULL };
+
 /*
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
@@ -227,21 +252,23 @@ static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
 	{ XK_NO_MOD,            Button4, kscrollup,      {.i = 1} },
 	{ XK_NO_MOD,            Button5, kscrolldown,    {.i = 1} },
+
+    // ----------
+    /*
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
+    */
+	{ TERMMOD,              Button2, selpaste,       {.i = 0},      1 },
+    // ----------
+
+    // ----------
+	// { CTRLMOD,              Button1, externalpipe,   {.v = openurlcmd } },
+    // ----------
+
 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
 	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
 };
-
-/* Internal keyboard shortcuts. */
-#define MODKEY Mod1Mask
-#define TERMMOD (Mod1Mask|ShiftMask)
-
-static char *openurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -o", "externalpipe", NULL };
-static char *copyurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -c", "externalpipe", NULL };
-static char *copyoutput[] = { "/bin/sh", "-c", "st-copyout", "externalpipe", NULL };
-
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
@@ -249,16 +276,28 @@ static Shortcut shortcuts[] = {
 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
 	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
+
+	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+
+    // ----------
+    /*
 	{ TERMMOD,              XK_Prior,       zoom,           {.f = +1} },
 	{ TERMMOD,              XK_Next,        zoom,           {.f = -1} },
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
+    */
+	{ CTRLMOD,              XK_plus,        zoom,           {.f = +1} },
+	{ CTRLMOD,              XK_underscore,  zoom,           {.f = -1} },
+	{ CTRLMOD,              XK_parenright,  zoomreset,      {.f =  0} },
+    // ----------
+
+    /*
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      clippaste,      {.i =  0} },
 	{ MODKEY,               XK_v,           clippaste,      {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
-	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 	{ MODKEY,               XK_Page_Up,     kscrollup,      {.i = -1} },
@@ -269,8 +308,8 @@ static Shortcut shortcuts[] = {
 	{ MODKEY,               XK_Down,        kscrolldown,    {.i =  1} },
 	{ MODKEY,               XK_u,           kscrollup,      {.i = -1} },
 	{ MODKEY,               XK_d,           kscrolldown,    {.i = -1} },
-	{ MODKEY,		XK_s,		changealpha,	{.f = -0.05} },
-	{ MODKEY,		XK_a,		changealpha,	{.f = +0.05} },
+	{ MODKEY,       		XK_s,		    changealpha,	{.f = -0.05} },
+	{ MODKEY,	        	XK_a,		    changealpha,	{.f = +0.05} },
 	{ TERMMOD,              XK_Up,          zoom,           {.f = +1} },
 	{ TERMMOD,              XK_Down,        zoom,           {.f = -1} },
 	{ TERMMOD,              XK_K,           zoom,           {.f = +1} },
@@ -280,6 +319,7 @@ static Shortcut shortcuts[] = {
 	{ MODKEY,               XK_l,           externalpipe,   {.v = openurlcmd } },
 	{ MODKEY,               XK_y,           externalpipe,   {.v = copyurlcmd } },
 	{ MODKEY,               XK_o,           externalpipe,   {.v = copyoutput } },
+    */
 };
 
 /*
@@ -307,7 +347,20 @@ static Shortcut shortcuts[] = {
  * If you want keys other than the X11 function keys (0xFD00 - 0xFFFF)
  * to be mapped below, add them to this array.
  */
-static KeySym mappedkeys[] = { -1 };
+static KeySym mappedkeys[] = {
+    // ----------
+	XK_C,
+	XK_V,
+	XK_X,
+	XK_space,
+	XK_bar,
+	XK_backslash,
+	XK_braceleft,
+	XK_bracketleft,
+	XK_braceright,
+	XK_bracketright,
+    // ----------
+};
 
 /*
  * State bits to ignore when matching key or button events.  By default,
@@ -376,6 +429,7 @@ static Key key[] = {
 	{ XK_KP_7,          XK_ANY_MOD,     "\033Ow",       +2,    0},
 	{ XK_KP_8,          XK_ANY_MOD,     "\033Ox",       +2,    0},
 	{ XK_KP_9,          XK_ANY_MOD,     "\033Oy",       +2,    0},
+
 	{ XK_Up,            ShiftMask,      "\033[1;2A",     0,    0},
 	{ XK_Up,            Mod1Mask,       "\033[1;3A",     0,    0},
 	{ XK_Up,         ShiftMask|Mod1Mask,"\033[1;4A",     0,    0},
@@ -385,6 +439,7 @@ static Key key[] = {
 	{ XK_Up,ShiftMask|ControlMask|Mod1Mask,"\033[1;8A",  0,    0},
 	{ XK_Up,            XK_ANY_MOD,     "\033[A",        0,   -1},
 	{ XK_Up,            XK_ANY_MOD,     "\033OA",        0,   +1},
+
 	{ XK_Down,          ShiftMask,      "\033[1;2B",     0,    0},
 	{ XK_Down,          Mod1Mask,       "\033[1;3B",     0,    0},
 	{ XK_Down,       ShiftMask|Mod1Mask,"\033[1;4B",     0,    0},
@@ -394,6 +449,7 @@ static Key key[] = {
 	{ XK_Down,ShiftMask|ControlMask|Mod1Mask,"\033[1;8B",0,    0},
 	{ XK_Down,          XK_ANY_MOD,     "\033[B",        0,   -1},
 	{ XK_Down,          XK_ANY_MOD,     "\033OB",        0,   +1},
+
 	{ XK_Left,          ShiftMask,      "\033[1;2D",     0,    0},
 	{ XK_Left,          Mod1Mask,       "\033[1;3D",     0,    0},
 	{ XK_Left,       ShiftMask|Mod1Mask,"\033[1;4D",     0,    0},
@@ -403,6 +459,7 @@ static Key key[] = {
 	{ XK_Left,ShiftMask|ControlMask|Mod1Mask,"\033[1;8D",0,    0},
 	{ XK_Left,          XK_ANY_MOD,     "\033[D",        0,   -1},
 	{ XK_Left,          XK_ANY_MOD,     "\033OD",        0,   +1},
+
 	{ XK_Right,         ShiftMask,      "\033[1;2C",     0,    0},
 	{ XK_Right,         Mod1Mask,       "\033[1;3C",     0,    0},
 	{ XK_Right,      ShiftMask|Mod1Mask,"\033[1;4C",     0,    0},
@@ -412,38 +469,134 @@ static Key key[] = {
 	{ XK_Right,ShiftMask|ControlMask|Mod1Mask,"\033[1;8C",0,   0},
 	{ XK_Right,         XK_ANY_MOD,     "\033[C",        0,   -1},
 	{ XK_Right,         XK_ANY_MOD,     "\033OC",        0,   +1},
+
 	{ XK_ISO_Left_Tab,  ShiftMask,      "\033[Z",        0,    0},
+
 	{ XK_Return,        Mod1Mask,       "\033\r",        0,    0},
-	{ XK_Return,        XK_ANY_MOD,     "\r",            0,    0},
+    // ----------
+	{ XK_Return,        ControlMask|Mod1Mask, "\036\015",0,    0},
+    // ----------
+	{ XK_Return,        XK_ANY_MOD,      "\r",           0,    0},
+
+    // ----------
+	{ XK_Insert,           ShiftMask,      "\033[2;2~",     0,    0},
+	{ XK_Insert,           Mod1Mask,       "\033[2;3~",     0,    0},
+	{ XK_Insert,       ShiftMask|Mod1Mask, "\033[2;4~",     0,    0},
+	{ XK_Insert,           ControlMask,    "\033[2;5~",     0,    0},
+	{ XK_Insert,    ShiftMask|ControlMask, "\033[2;6~",     0,    0},
+	{ XK_Insert,     ControlMask|Mod1Mask, "\033[2;7~",     0,    0},
+    { XK_Insert, ShiftMask|ControlMask|Mod1Mask,"\033[2;8~",0,    0},
+    // ----------
 	{ XK_Insert,        ShiftMask,      "\033[4l",      -1,    0},
 	{ XK_Insert,        ShiftMask,      "\033[2;2~",    +1,    0},
 	{ XK_Insert,        ControlMask,    "\033[L",       -1,    0},
 	{ XK_Insert,        ControlMask,    "\033[2;5~",    +1,    0},
 	{ XK_Insert,        XK_ANY_MOD,     "\033[4h",      -1,    0},
 	{ XK_Insert,        XK_ANY_MOD,     "\033[2~",      +1,    0},
+
+    // ----------
+	{ XK_Delete,           ShiftMask,      "\033[3;2~",     0,    0},
+	{ XK_Delete,           Mod1Mask,       "\033[3;3~",     0,    0},
+	{ XK_Delete,       ShiftMask|Mod1Mask, "\033[3;4~",     0,    0},
+	{ XK_Delete,           ControlMask,    "\033[3;5~",     0,    0},
+	{ XK_Delete,    ShiftMask|ControlMask, "\033[3;6~",     0,    0},
+	{ XK_Delete,     ControlMask|Mod1Mask, "\033[3;7~",     0,    0},
+    { XK_Delete, ShiftMask|ControlMask|Mod1Mask,"\033[3;8~",0,    0},
+    // ----------
 	{ XK_Delete,        ControlMask,    "\033[M",       -1,    0},
 	{ XK_Delete,        ControlMask,    "\033[3;5~",    +1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[2K",      -1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[3;2~",    +1,    0},
 	{ XK_Delete,        XK_ANY_MOD,     "\033[P",       -1,    0},
 	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      +1,    0},
+
 	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0},
+    // ----------
 	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0},
+	{ XK_BackSpace,     ShiftMask,      "\036\010",      0,    0},
+	{ XK_BackSpace,     ControlMask,    "\036\177",      0,    0},
+	{ XK_BackSpace,     ControlMask|ShiftMask,"\037\177",0,    0},
+	{ XK_BackSpace,     ShiftMask|Mod1Mask,   "\037\177",0,    0},
+	{ XK_BackSpace,     ControlMask|Mod1Mask, "\033\100",0,    0},
+    // ----------
+
+    // ----------
+	{ XK_bar,           ControlMask|ShiftMask, "\037\134", 0,    0},
+	{ XK_backslash,     ControlMask|Mod1Mask,  "\000",     0,    0},
+    // ----------
+
+    // ----------
+	{ XK_C,             ControlMask|ShiftMask, "\033[2;5~",0,    0},
+	{ XK_V,             ControlMask|ShiftMask, "\033[2;2~",0,    0},
+    // ----------
+
+    // ----------
+	{ XK_braceleft,     ControlMask|ShiftMask, "\037\133", 0,    0},
+	{ XK_bracketleft,   ControlMask|Mod1Mask,  "\000",     0,    0},
+	{ XK_braceright,    ControlMask|ShiftMask, "\037\135", 0,    0},
+	{ XK_bracketright,  ControlMask|Mod1Mask,  "\000",     0,    0},
+    // ----------
+
+    // ----------
+	{ XK_space,         Mod1Mask,         "\033\040",      0,    0},
+	{ XK_space,         ShiftMask,        "\036\040",      0,    0},
+	{ XK_space,         ControlMask|ShiftMask,  "\037\040",0,    0},
+	{ XK_space,         ShiftMask|Mod1Mask,     "\037\040",0,    0},
+	{ XK_space,         ControlMask|Mod1Mask,   "\033\043",0,    0},
+    // ----------
+
+    // ----------
+	{ XK_X,             ControlMask|ShiftMask,  "\033\170",0,    0},
+    // ----------
+
+    // ----------
+	{ XK_Home,          ShiftMask,      "\033[1;2H",     0,    0},
+	{ XK_Home,          Mod1Mask,       "\033[1;3H",     0,    0},
+	{ XK_Home,      ShiftMask|Mod1Mask, "\033[1;4H",     0,    0},
+	{ XK_Home,          ControlMask,    "\033[1;5H",     0,    0},
+	{ XK_Home,   ShiftMask|ControlMask, "\033[1;6H",     0,    0},
+	{ XK_Home,    ControlMask|Mod1Mask, "\033[1;7H",     0,    0},
+    { XK_Home,ShiftMask|ControlMask|Mod1Mask,"\033[1;8H",0,    0},
+    // ----------
 	{ XK_Home,          ShiftMask,      "\033[2J",       0,   -1},
-	{ XK_Home,          ShiftMask,      "\033[1;2H",     0,   +1},
 	{ XK_Home,          XK_ANY_MOD,     "\033[H",        0,   -1},
 	{ XK_Home,          XK_ANY_MOD,     "\033[1~",       0,   +1},
-	{ XK_End,           ControlMask,    "\033[J",       -1,    0},
-	{ XK_End,           ControlMask,    "\033[1;5F",    +1,    0},
+
+    // ----------
+	{ XK_End,           ShiftMask,      "\033[1;2F",     0,    0},
+	{ XK_End,           Mod1Mask,       "\033[1;3F",     0,    0},
+	{ XK_End,       ShiftMask|Mod1Mask, "\033[1;4F",     0,    0},
+	{ XK_End,           ControlMask,    "\033[1;5F",     0,    0},
+	{ XK_End,    ShiftMask|ControlMask, "\033[1;6F",     0,    0},
+	{ XK_End,     ControlMask|Mod1Mask, "\033[1;7F",     0,    0},
+    { XK_End, ShiftMask|ControlMask|Mod1Mask,"\033[1;8F",0,    0},
+    // ----------
 	{ XK_End,           ShiftMask,      "\033[K",       -1,    0},
-	{ XK_End,           ShiftMask,      "\033[1;2F",    +1,    0},
+	{ XK_End,           ControlMask,    "\033[J",       -1,    0},
 	{ XK_End,           XK_ANY_MOD,     "\033[4~",       0,    0},
-	{ XK_Prior,         ControlMask,    "\033[5;5~",     0,    0},
-	{ XK_Prior,         ShiftMask,      "\033[5;2~",     0,    0},
-	{ XK_Prior,         XK_ANY_MOD,     "\033[5~",       0,    0},
-	{ XK_Next,          ControlMask,    "\033[6;5~",     0,    0},
-	{ XK_Next,          ShiftMask,      "\033[6;2~",     0,    0},
+
+    // ----------
+	{ XK_Prior,           ShiftMask,      "\033[5;2~",     0,    0},
+	{ XK_Prior,           Mod1Mask,       "\033[5;3~",     0,    0},
+	{ XK_Prior,       ShiftMask|Mod1Mask, "\033[5;4~",     0,    0},
+	{ XK_Prior,           ControlMask,    "\033[5;5~",     0,    0},
+	{ XK_Prior,    ShiftMask|ControlMask, "\033[5;6~",     0,    0},
+	{ XK_Prior,     ControlMask|Mod1Mask, "\033[5;7~",     0,    0},
+    { XK_Prior, ShiftMask|ControlMask|Mod1Mask,"\033[5;8~",0,    0},
+    // ----------
+	{ XK_Prior,           XK_ANY_MOD,     "\033[5~",       0,    0},
+
+    // ----------
+	{ XK_Next,            ShiftMask,      "\033[6;2~",     0,    0},
+	{ XK_Next,            Mod1Mask,       "\033[6;3~",     0,    0},
+	{ XK_Next,        ShiftMask|Mod1Mask, "\033[6;4~",     0,    0},
+	{ XK_Next,            ControlMask,    "\033[6;5~",     0,    0},
+	{ XK_Next,     ShiftMask|ControlMask, "\033[6;6~",     0,    0},
+	{ XK_Next,      ControlMask|Mod1Mask, "\033[6;7~",     0,    0},
+    { XK_Next,  ShiftMask|ControlMask|Mod1Mask,"\033[6;8~",0,    0},
+    // ----------
 	{ XK_Next,          XK_ANY_MOD,     "\033[6~",       0,    0},
+
 	{ XK_F1,            XK_NO_MOD,      "\033OP" ,       0,    0},
 	{ XK_F1, /* F13 */  ShiftMask,      "\033[1;2P",     0,    0},
 	{ XK_F1, /* F25 */  ControlMask,    "\033[1;5P",     0,    0},
