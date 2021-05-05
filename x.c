@@ -1891,7 +1891,9 @@ xsetcursor(int cursor)
 {
 #if 0
     fprintf(stderr, "xsetcursor(%d)\n", cursor);
-    // to force blinking always ...
+#endif
+    // mck - blinking works everywhere except in nvim in tmux
+    // force blinking always until that is solved ...
     if (cursor == 2) {
         cursor = 1;
     } else if (cursor == 4) {
@@ -1899,7 +1901,6 @@ xsetcursor(int cursor)
     } else if (cursor == 6) {
         cursor = 5;
     }
-#endif
 
 	if (!BETWEEN(cursor, 0, 8)) /* 7-8: st extensions */
 		return 1;

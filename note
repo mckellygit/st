@@ -1,3 +1,28 @@
 original suckless st repo:
 origin	https://git.suckless.org/st (fetch)
 origin	https://git.suckless.org/st (push)
+
+curl -LO http://invisible-island.net/datafiles/current/terminfo.src.gz
+
+NOTE: cursor is forced blinking everywhere (nvim in tmux issue)
+
+nvim -V3 to get terminal settings -
+
+st outside tmux -
+cursor_invisible          civis      = <Esc>[?25l
+cursor_normal             cnorm      = <Esc>[?25h
+cursor_visible            cvvis      = <Esc>[?25h
+enter_blink_mode          blink      = <Esc>[1m
+enter_bold_mode           bold       = <Esc>[1m
+Ss                        = <Esc>[%p1%d q
+Se                        = <Esc>[ q
+
+st inside tmux -
+cursor_invisible          civis      = <Esc>[?25l
+cursor_normal             cnorm      = <Esc>[34h<Esc>[?25h
+cursor_visible            cvvis      = <Esc>[34l
+enter_blink_mode          blink      = <Esc>[5m
+enter_bold_mode           bold       = <Esc>[1m
+Ss                        = <Esc>[%p1%d q
+Se                        = <Esc>[2 q
+
