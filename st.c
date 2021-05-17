@@ -1117,6 +1117,12 @@ kscrollup(const Arg* a)
 }
 
 void
+no_op_func(const Arg* a)
+{
+	return;
+}
+
+void
 tscrolldown(int orig, int n, int copyhist)
 {
 	int i;

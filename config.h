@@ -197,6 +197,11 @@ static unsigned int defaultattr = 11;
  */
 static uint forcemousemod = ShiftMask;
 
+// enable for raw X shift (and alt+shift for rect and shift+double/
+//     triple click for word/line) selection and copy to clipboard.
+//     And shift+wheel up/down for alt screen scroll.
+// #define RAW_MOUSE_SEL 1
+
 /*
  * Xresources preferences to load at startup
  */
@@ -250,13 +255,13 @@ static char *copyoutput[] = { "/bin/sh", "-c", "st-copyout", "externalpipe", NUL
  */
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
+#if defined(RAW_MOUSE_SEL)
 	{ XK_NO_MOD,            Button4, kscrollup,      {.i = 1} },
 	{ XK_NO_MOD,            Button5, kscrolldown,    {.i = 1} },
+#endif
 
     // ----------
-    /*
-	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
-    */
+	// { XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
 	{ TERMMOD,              Button2, selpaste,       {.i = 0},      1 },
     // ----------
 
@@ -264,10 +269,12 @@ static MouseShortcut mshortcuts[] = {
 	// { CTRLMOD,              Button1, externalpipe,   {.v = openurlcmd } },
     // ----------
 
+#if defined(RAW_MOUSE_SEL)
 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
 	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
+#endif
 };
 
 static Shortcut shortcuts[] = {

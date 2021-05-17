@@ -392,9 +392,11 @@ mousesel(XEvent *e, int done)
 			break;
 		}
 	}
+#if defined(RAW_MOUSE_SEL)
 	selextend(evcol(e), evrow(e), seltype, done);
 	if (done)
 		setsel(getsel(), e->xbutton.time);
+#endif
 }
 
 void
@@ -522,7 +524,11 @@ bpress(XEvent *e)
 		xsel.tclick2 = xsel.tclick1;
 		xsel.tclick1 = now;
 
+#if defined(RAW_MOUSE_SEL)
 		selstart(evcol(e), evrow(e), snap);
+#else
+		mousereport(e);
+#endif
 	}
 }
 
@@ -727,8 +733,13 @@ brelease(XEvent *e)
 
 	if (mouseaction(e, 1))
 		return;
+#if defined(RAW_MOUSE_SEL)
 	if (e->xbutton.button == Button1)
 		mousesel(e, 1);
+#else
+	mousereport(e);
+	return;
+#endif
 }
 
 void
@@ -739,7 +750,11 @@ bmotion(XEvent *e)
 		return;
 	}
 
+#if defined(RAW_MOUSE_SEL)
 	mousesel(e, 0);
+#else
+	mousereport(e);
+#endif
 }
 
 void

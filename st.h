@@ -84,6 +84,8 @@ void die(const char *, ...);
 void redraw(void);
 void draw(void);
 
+void no_op_func(const Arg *);
+
 void externalpipe(const Arg *);
 void kscrolldown(const Arg *);
 void kscrollup(const Arg *);
