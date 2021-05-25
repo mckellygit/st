@@ -2,6 +2,10 @@ original suckless st repo:
 origin	https://git.suckless.org/st (fetch)
 origin	https://git.suckless.org/st (push)
 
+this repo based on:
+
+https://github.com/LukeSmithxyz/st.git
+
 curl -LO http://invisible-island.net/datafiles/current/terminfo.src.gz
 
 NOTE: cursor is forced blinking everywhere (nvim in tmux issue)
