@@ -359,6 +359,11 @@ static KeySym mappedkeys[] = {
 	XK_C,
 	XK_V,
 	XK_X,
+	XK_J,
+	XK_K,
+	XK_G,
+	XK_N,
+	XK_P,
 	XK_space,
 	XK_bar,
 	XK_backslash,
@@ -547,13 +552,24 @@ static Key key[] = {
     // ----------
 	{ XK_space,         Mod1Mask,         "\033\040",      0,    0},
 	{ XK_space,         ShiftMask,        "\036\040",      0,    0},
-	{ XK_space,         ControlMask|ShiftMask,  "\037\040",0,    0},
-	{ XK_space,         ShiftMask|Mod1Mask,     "\037\040",0,    0},
-	{ XK_space,         ControlMask|Mod1Mask,   "\033\043",0,    0},
+	{ XK_space,         ControlMask|ShiftMask, "\037\040", 0,    0},
+	{ XK_space,         ShiftMask|Mod1Mask,    "\037\040", 0,    0},
+	{ XK_space,         ControlMask|Mod1Mask,  "\033\043", 0,    0},
     // ----------
 
     // ----------
-	{ XK_X,             ControlMask|ShiftMask,  "\033\170",0,    0},
+	{ XK_X,             ControlMask|ShiftMask, "\033\170", 0,    0},
+    // ----------
+
+    // ----------
+	{ XK_J,             ControlMask|ShiftMask, "\037\112", 0,    0},
+	{ XK_K,             ControlMask|ShiftMask, "\037\113", 0,    0},
+    // ----------
+
+    // ----------
+	{ XK_G,             ControlMask|ShiftMask, "\037\107", 0,    0},
+	{ XK_N,             ControlMask|ShiftMask, "\037\116", 0,    0},
+	{ XK_P,             ControlMask|ShiftMask, "\037\120", 0,    0},
     // ----------
 
     // ----------
