@@ -200,7 +200,7 @@ static uint forcemousemod = ShiftMask;
 // enable for raw X shift (and alt+shift for rect and shift+double/
 //     triple click for word/line) selection and copy to clipboard.
 //     And shift+wheel up/down for alt screen scroll.
-// #define RAW_MOUSE_SEL 1
+#define RAW_MOUSE_SEL 1
 
 /*
  * Xresources preferences to load at startup
@@ -244,6 +244,7 @@ ResourcePref resources[] = {
 #define MODKEY Mod1Mask
 #define TERMMOD (Mod1Mask|ShiftMask)
 #define CTRLMOD (ControlMask|ShiftMask)
+#define CTRLALT (ControlMask|Mod1Mask)
 
 static char *openurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -o", "externalpipe", NULL };
 static char *copyurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -c", "externalpipe", NULL };
@@ -297,6 +298,8 @@ static Shortcut shortcuts[] = {
 	{ CTRLMOD,              XK_parenright,  zoomreset,      {.f =  0} },
     // ----------
 
+	{ CTRLALT,              XK_c,           clipcopy,       {.i =  0} },
+	{ CTRLALT,              XK_v,           clippaste,      {.i =  0} },
     /*
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
