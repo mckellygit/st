@@ -531,13 +531,15 @@ static Key key[] = {
 	{ XK_BackSpace,     ShiftMask,      "\036\010",      0,    0},
 	{ XK_BackSpace,     ControlMask,    "\036\177",      0,    0},
 	{ XK_BackSpace,     ControlMask|ShiftMask,"\037\177",0,    0},
-	{ XK_BackSpace,     ShiftMask|Mod1Mask,   "\037\177",0,    0},
+	// { XK_BackSpace,     ShiftMask|Mod1Mask,   "\037\177",0,    0},
+	{ XK_BackSpace,     ShiftMask|Mod1Mask,   "",0,    0},
 	{ XK_BackSpace,     ControlMask|Mod1Mask, "\033\100",0,    0},
     // ----------
 
     // ----------
 	{ XK_bar,           ControlMask|ShiftMask, "\037\134", 0,    0},
-	{ XK_backslash,     ControlMask|Mod1Mask,  "\000",     0,    0},
+	// { XK_backslash,     ControlMask|Mod1Mask,  "\000",     0,    0},
+	{ XK_backslash,     ControlMask|Mod1Mask,  "",     0,    0},
     // ----------
 
     // ----------
@@ -547,16 +549,17 @@ static Key key[] = {
 
     // ----------
 	{ XK_braceleft,     ControlMask|ShiftMask, "\037\133", 0,    0},
-	{ XK_bracketleft,   ControlMask|Mod1Mask,  "\000",     0,    0},
+	{ XK_bracketleft,   ControlMask|Mod1Mask,  "",     0,    0},
 	{ XK_braceright,    ControlMask|ShiftMask, "\037\135", 0,    0},
-	{ XK_bracketright,  ControlMask|Mod1Mask,  "\000",     0,    0},
+	{ XK_bracketright,  ControlMask|Mod1Mask,  "",     0,    0},
     // ----------
 
     // ----------
 	{ XK_space,         Mod1Mask,         "\033\040",      0,    0},
 	{ XK_space,         ShiftMask,        "\036\040",      0,    0},
 	{ XK_space,         ControlMask|ShiftMask, "\037\040", 0,    0},
-	{ XK_space,         ShiftMask|Mod1Mask,    "\037\040", 0,    0},
+	// { XK_space,         ShiftMask|Mod1Mask,    "\037\040", 0,    0},
+	{ XK_space,         ShiftMask|Mod1Mask,    "", 0,    0},
 	{ XK_space,         ControlMask|Mod1Mask,  "\033\043", 0,    0},
     // ----------
 
