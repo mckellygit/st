@@ -14,8 +14,9 @@ static int borderpx = 2;
  * st.font:       Liberation Mono:pixelsize=22:antialias=true:autohint=true
  * st.alpha:      0.96
  * st.foreground: #c5c5c5
- * st.background: #2e2e26
- * geometry:      164x48+854+856 (not an X resource)
+ * !! gray st.background: #2e2e26
+ * st.background: #14292e
+ * geometry:      194x51+690+678 (not an X resource)
  */
 
 /*
