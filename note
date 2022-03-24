@@ -30,3 +30,4 @@ enter_bold_mode           bold       = <Esc>[1m
 Ss                        = <Esc>[%p1%d q
 Se                        = <Esc>[2 q
 
+tic -xs -o ~/.terminfo st.info
