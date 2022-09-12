@@ -544,7 +544,7 @@ static Key key[] = {
 	// { XK_backslash,     ControlMask|Mod1Mask,  "\000",     0,    0},
 	// { XK_backslash,     ControlMask|Mod1Mask,  "",     0,    0},
 	// send ctrl-s + ] (\x13\x5d) tmux copy-mode
-	{ XK_backslash,     ControlMask|Mod1Mask,  "\023\135", 0,    0},
+	// { XK_backslash,     ControlMask|Mod1Mask,  "\023\135", 0,    0},
     // ----------
 
     // ----------
