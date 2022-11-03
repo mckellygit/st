@@ -1777,6 +1777,7 @@ xsetenv(void)
 
     // ----------
     setenv("ST_VERSION", buf, 1);
+    setenv("ST_VERSION_MCK", buf, 1);
     // ----------
 }
 

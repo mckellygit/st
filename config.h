@@ -360,6 +360,7 @@ static Shortcut shortcuts[] = {
  */
 static KeySym mappedkeys[] = {
     // ----------
+    XK_i,
 	XK_C,
 	XK_V,
 	XK_X,
@@ -545,6 +546,10 @@ static Key key[] = {
 	// { XK_backslash,     ControlMask|Mod1Mask,  "",     0,    0},
 	// send ctrl-s + ] (\x13\x5d) tmux copy-mode
 	// { XK_backslash,     ControlMask|Mod1Mask,  "\023\135", 0,    0},
+    // ----------
+
+    // ----------
+	{ XK_i,             ControlMask,           "\036\011", 0,    0},
     // ----------
 
     // ----------
