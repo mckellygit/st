@@ -5,8 +5,14 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "mono:pixelsize=12:antialias=true:autohint=true";
+static char *font = "Liberation Mono:pixelsize=22:antialias=true:autohint=true";
 static char *font2[] = { "JoyPixels:pixelsize=10:antialias=true:autohint=true" };
+
+/* disable bold, italic and roman fonts globally */
+int disablebold = 1;
+int disableitalic = 0;
+int disableroman = 0;
+
 static int borderpx = 2;
 
 /*
