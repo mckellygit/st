@@ -560,7 +560,9 @@ static Key key[] = {
     // ----------
 
     // ----------
+    // send std C-Insert esc code, as sometimes cannot discern the Shift in C-S-<letter> ...
 	{ XK_C,             ControlMask|ShiftMask, "\033[2;5~",0,    0},
+    // send std S-Insert esc code, as sometimes cannot discern the Shift in C-S-<letter> ...
 	{ XK_V,             ControlMask|ShiftMask, "\033[2;2~",0,    0},
     // ----------
 
