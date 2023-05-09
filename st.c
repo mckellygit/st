@@ -239,6 +239,75 @@ static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
 static Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
 static Rune utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
 
+// --------------------------
+
+// colour routines from tmux ...
+
+#define COLOUR_FLAG_256 0x01000000
+
+static int
+colour_dist_sq(int R, int G, int B, int r, int g, int b)
+{
+	return ((R - r) * (R - r) + (G - g) * (G - g) + (B - b) * (B - b));
+}
+
+static int
+colour_to_6cube(int v)
+{
+	if (v < 48)
+		return (0);
+	if (v < 114)
+		return (1);
+	return ((v - 35) / 40);
+}
+
+/*
+ * Convert an RGB triplet to the xterm(1) 256 colour palette.
+ *
+ * xterm provides a 6x6x6 colour cube (16 - 231) and 24 greys (232 - 255). We
+ * map our RGB colour to the closest in the cube, also work out the closest
+ * grey, and use the nearest of the two.
+ *
+ * Note that the xterm has much lower resolution for darker colours (they are
+ * not evenly spread out), so our 6 levels are not evenly spread: 0x0, 0x5f
+ * (95), 0x87 (135), 0xaf (175), 0xd7 (215) and 0xff (255). Greys are more
+ * evenly spread (8, 18, 28 ... 238).
+ */
+static int
+colour_find_rgb(int r, int g, int b)
+{
+	static const int	q2c[6] = { 0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff };
+	int			qr, qg, qb, cr, cg, cb, d, idx;
+	int			grey_avg, grey_idx, grey;
+
+	/* Map RGB to 6x6x6 cube. */
+	qr = colour_to_6cube(r); cr = q2c[qr];
+	qg = colour_to_6cube(g); cg = q2c[qg];
+	qb = colour_to_6cube(b); cb = q2c[qb];
+
+	/* If we have hit the colour exactly, return early. */
+	if (cr == r && cg == g && cb == b)
+		return ((16 + (36 * qr) + (6 * qg) + qb) | COLOUR_FLAG_256);
+
+	/* Work out the closest grey (average of RGB). */
+	grey_avg = (r + g + b) / 3;
+	if (grey_avg > 238)
+		grey_idx = 23;
+	else
+		grey_idx = (grey_avg - 3) / 10;
+	grey = 8 + (10 * grey_idx);
+
+	/* Is grey or 6x6x6 colour closest? */
+	d = colour_dist_sq(cr, cg, cb, r, g, b);
+	if (colour_dist_sq(grey, grey, grey, r, g, b) < d)
+		idx = 232 + grey_idx;
+	else
+		idx = 16 + (36 * qr) + (6 * qg) + qb;
+	return (idx | COLOUR_FLAG_256);
+}
+
+// --------------------------
+
 ssize_t
 xwrite(int fd, const char *s, size_t len)
 {
@@ -1953,6 +2022,62 @@ strhandle(void)
 			if (narg > 1)
 				xsettitle(strescseq.args[1]);
 			return;
+        case 12:
+            if (narg == 2)
+            {
+                // fprintf(stderr, "OSC 12 arg1: %s\n", strescseq.args[1]);
+
+                // NOTE: for tmux, need to add Cs -
+                //       set-option -sa terminal-overrides 'st*:Cs=\E]12;%p1%s\007'
+
+                if ((int)strlen(strescseq.args[1]) >= 12)
+                {
+                    if (strncmp(strescseq.args[1], "rgb:", 4) == 0)
+                    {
+                        char red[16], green[16], blue[16];
+
+                        red[0] = '0';
+                        red[1] = 'x';
+                        red[2] = strescseq.args[1][4];
+                        red[3] = strescseq.args[1][5];
+                        red[4] = '\0';
+                        int nred = strtoul(red, NULL, 16);
+
+                        green[0] = '0';
+                        green[1] = 'x';
+                        green[2] = strescseq.args[1][7];
+                        green[3] = strescseq.args[1][8];
+                        green[4] = '\0';
+                        int ngreen = strtoul(green, NULL, 16);
+
+                        blue[0] = '0';
+                        blue[1] = 'x';
+                        blue[2] = strescseq.args[1][10];
+                        blue[3] = strescseq.args[1][11];
+                        blue[4] = '\0';
+                        int nblue = strtoul(blue, NULL, 16);
+
+                        defaultcs = colour_find_rgb(nred, ngreen, nblue) & 0xff;
+
+                        // fprintf(stderr, "red: %s  green: %s  blue: %s\n", red, green, blue);
+                        // fprintf(stderr, "nred: %d  ngreen: %d  nblue: %d  color = %d\n", nred, ngreen, nblue, defaultcs);
+
+                        redraw();
+                        return;
+                    }
+                }
+
+                // single number 256 color ..
+
+                if (j >= 0 && j < ncolors)
+                {
+                    defaultcs = j;
+                    redraw();
+                    return;
+                }
+            }
+            fprintf(stderr, "erresc: invalid OSC 12 use\n");
+            return;
 		case 52:
 			if (narg > 2 && allowwindowops) {
 				dec = base64dec(strescseq.args[2]);

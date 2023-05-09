@@ -141,3 +141,5 @@ extern unsigned int defaultfg;
 extern unsigned int defaultbg;
 extern float alpha;
 extern const int boxdraw, boxdraw_bold, boxdraw_braille;
+extern unsigned int defaultcs;
+extern unsigned const int ncolors;

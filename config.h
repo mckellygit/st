@@ -152,6 +152,7 @@ static const char *colorname[] = {
 	"#ebdbb2", /* 259 -> fg */
 };
 
+unsigned const int ncolors = sizeof(colorname)/sizeof(*colorname);
 
 /*
  * Default colors (colorname index)
