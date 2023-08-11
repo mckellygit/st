@@ -307,9 +307,13 @@ static Shortcut shortcuts[] = {
 	{ CTRLMOD,              XK_parenright,  zoomreset,      {.f =  0} },
     // ----------
 
-	{ CTRLALT,              XK_c,           clipcopy,       {.i =  0} },
 	{ CTRLALT,              XK_v,           clippaste,      {.i =  0} },
+
+	{ CTRLALT,              XK_c,           ttysend,        {.s = "\033[2;5~"} },
+
     /*
+	{ CTRLALT,              XK_c,           clipcopy,       {.i =  0} },
+
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
