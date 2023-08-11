@@ -52,8 +52,16 @@ install: st
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
 	sed "s/VERSION/$(VERSION)/g" < st.1 > $(DESTDIR)$(MANPREFIX)/man1/st.1
 	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/st.1
-	tic -sx st.info
+	@echo  
+	tic -sx -o /usr/local/share/terminfo st.info
+	tic -sx -o /usr/share/terminfo st.info
+	@echo  
+	@echo NOTE: also:
+	@echo cp /usr/local/share/terminfo/s/st\* \~/.terminfo/s
+	@echo  
 	@echo Please see the README file regarding the terminfo entry of st.
+
+# not as root user ... tic -sx -o ~/.terminfo st.info
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/st
