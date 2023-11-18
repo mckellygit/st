@@ -1813,9 +1813,24 @@ xseticontitle(char *p)
 	XFree(prop.value);
 }
 
+static int initialTitle = 1;
 void
-xsettitle(char *p)
+xsettitle(char *p1)
 {
+    if (initialTitle)
+        initialTitle = 0;
+    else
+        return;
+
+    char px[256] = { "" };
+    char *term = getenv("TERM");
+    if (term == NULL)
+        strcpy(px, "st-term");
+    else
+        snprintf(px, 100, "st-%s", term);
+
+    char *p = &px[0];
+
 	XTextProperty prop;
 	DEFAULT(p, opt_title);
 
