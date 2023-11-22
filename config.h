@@ -373,6 +373,7 @@ static Shortcut shortcuts[] = {
 static KeySym mappedkeys[] = {
     // ----------
     XK_i,
+    XK_I,
 	XK_C,
 	XK_V,
 	XK_X,
@@ -503,6 +504,10 @@ static Key key[] = {
 
 	{ XK_ISO_Left_Tab,  ShiftMask,      "\033[Z",        0,    0},
 
+ // { XK_ISO_Left_Tab,  ShiftMask,             "\033[27;1;9~",  0,    0},
+ // { XK_ISO_Left_Tab,  ControlMask,           "\033[27;5;9~",  0,    0},
+ // { XK_ISO_Left_Tab,  ShiftMask|ControlMask, "\033[27;6;9~",  0,    0},
+
 	{ XK_Return,        Mod1Mask,       "\033\r",        0,    0},
     // ----------
 	{ XK_Return,        ControlMask|Mod1Mask, "\036\015",0,    0},
@@ -563,6 +568,7 @@ static Key key[] = {
 
     // ----------
 	{ XK_i,             ControlMask,           "\036\011", 0,    0},
+	{ XK_I,             ShiftMask|ControlMask, "\033[Z",   0,    0},
     // ----------
 
     // ----------
