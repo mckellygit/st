@@ -1722,9 +1722,7 @@ tsetmode(int priv, int set, int *args, int narg)
 				      codes. */
 				break;
 			default:
-				fprintf(stderr,
-					"erresc: unknown private set/reset mode %d\n",
-					*args);
+				// fprintf(stderr, "erresc: unknown private set/reset mode %d\n", *args);
 				break;
 			}
 		} else {
@@ -1744,9 +1742,7 @@ tsetmode(int priv, int set, int *args, int narg)
 				MODBIT(term.mode, set, MODE_CRLF);
 				break;
 			default:
-				fprintf(stderr,
-					"erresc: unknown set/reset mode %d\n",
-					*args);
+				// fprintf(stderr, "erresc: unknown set/reset mode %d\n", *args);
 				break;
 			}
 		}
@@ -1762,8 +1758,8 @@ csihandle(void)
 	switch (csiescseq.mode[0]) {
 	default:
 	unknown:
-		fprintf(stderr, "erresc: unknown csi ");
-		csidump();
+		// fprintf(stderr, "erresc: unknown csi ");
+		// csidump();
 		/* die(""); */
 		break;
 	case '@': /* ICH -- Insert <n> blank char */
@@ -2120,8 +2116,8 @@ strhandle(void)
 		return;
 	}
 
-	fprintf(stderr, "erresc: unknown str ");
-	strdump();
+	// fprintf(stderr, "erresc: unknown str ");
+	// strdump();
 }
 
 void
