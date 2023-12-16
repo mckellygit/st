@@ -508,6 +508,9 @@ static Key key[] = {
  // { XK_ISO_Left_Tab,  ControlMask,           "\033[27;5;9~",  0,    0},
  // { XK_ISO_Left_Tab,  ShiftMask|ControlMask, "\033[27;6;9~",  0,    0},
 
+    { XK_Tab,           ShiftMask,      "\033[Z",        0,    0},
+    { XK_Tab,           ControlMask,    "\033[27;5;9~",  0,    0},
+
 	{ XK_Return,        Mod1Mask,       "\033\r",        0,    0},
     // ----------
 	{ XK_Return,        ControlMask|Mod1Mask, "\036\015",0,    0},
