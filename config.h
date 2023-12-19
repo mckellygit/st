@@ -16,6 +16,56 @@ int disableroman = 0;
 static int borderpx = 2;
 
 /*
+ * Synchronized-Update timeout in ms
+ * https://gitlab.com/gnachman/iterm2/-/wikis/synchronized-updates-spec
+ */
+/*
+In a nutshell: allow an application to suspend drawing until it has
+completed some output - so that the terminal will not flicker/tear by
+rendering partial content. If the end-of-suspension sequence doesn't
+arrive, the terminal bails out after a timeout (default: 200 ms).
+
+The feature is supported and pioneered by iTerm2. There are probably
+very few other terminals or applications which support this feature
+currently.
+
+One notable application which does support it is tmux (master as of
+2020-04-18) - where cursor flicker is completely avoided when a pane
+has new content. E.g. run in one pane: `while :; do cat x.c; done'
+while the cursor is at another pane.
+
+The terminfo string `Sync' added to `st.info' is also a tmux extension
+which tmux detects automatically when `st.info` is installed.
+
+Notes:
+
+- Draw-suspension begins on BSU sequence (Begin-Synchronized-Update),
+  and ends on ESU sequence (End-Synchronized-Update).
+
+- BSU, ESU are "\033P=1s\033\\", "\033P=2s\033\\" respectively (DCS).
+
+- SU doesn't support nesting - BSU begins or extends, ESU always ends.
+
+- ESU without BSU is ignored.
+
+- BSU after BSU extends (resets the timeout), so an application could
+  send BSU in a loop and keep drawing suspended - exactly like it can
+  not-draw anything in a loop. But as soon as it exits/aborted then
+  drawing is resumed according to the timeout even without ESU.
+
+- This implementation focuses on ESU and doesn't really care about BSU
+  in the sense that it tries hard to draw exactly once ESU arrives (if
+  it's not too soon after the last draw - according to minlatency),
+  and doesn't try to draw the content just up-to BSU. These two sides
+  complement eachother - not-drawing on BSU increases the chance that
+  ESU is not too soon after the last draw. This approach was chosen
+  because the application's main focus is that ESU indicates to the
+  terminal that the content is now ready - and that's when we try to
+  draw.
+ */
+static uint su_timeout = 200;
+
+/*
  * my ~/.Xresource defaults:
  * st.font:       Liberation Mono:pixelsize=22:antialias=true:autohint=true
  * st.alpha:      0.96
