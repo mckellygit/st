@@ -1623,6 +1623,12 @@ tsetattr(int *attr, int l)
 		case 49:
 			term.c.attr.bg = defaultbg;
 			break;
+        case 58: /* kitty protocol - set underline color, like 38 */
+            if ((idx = tdefcolor(attr, &i, l)) >= 0)
+                term.c.attr.fg = idx;
+        case 59: /* kitty protocol - reset underline color (after esc[58...m), like 39 */
+            term.c.attr.fg = defaultfg;
+            break;
 		default:
 			if (BETWEEN(attr[i], 30, 37)) {
 				term.c.attr.fg = attr[i] - 30;
