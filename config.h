@@ -606,8 +606,8 @@ static Key key[] = {
 	{ XK_BackSpace,     ShiftMask,      "\036\010",      0,    0},
 	{ XK_BackSpace,     ControlMask,    "\036\177",      0,    0},
 	{ XK_BackSpace,     ControlMask|ShiftMask,"\037\177",0,    0},
-	// { XK_BackSpace,     ShiftMask|Mod1Mask,   "\037\177",0,    0},
-	{ XK_BackSpace,     ShiftMask|Mod1Mask,   "",0,    0},
+	{ XK_BackSpace,     ShiftMask|Mod1Mask,   "\033\100",0,    0},
+	// { XK_BackSpace,     ShiftMask|Mod1Mask,   "",0,    0},
 	{ XK_BackSpace,     ControlMask|Mod1Mask, "\033\100",0,    0},
     // ----------
 
@@ -643,8 +643,8 @@ static Key key[] = {
 	{ XK_space,         Mod1Mask,         "",      0,    0},
 	{ XK_space,         ShiftMask,        "\036\040",      0,    0},
 	{ XK_space,         ControlMask|ShiftMask, "\037\040", 0,    0},
-	// { XK_space,         ShiftMask|Mod1Mask,    "\037\040", 0,    0},
-	{ XK_space,         ShiftMask|Mod1Mask,    "", 0,    0},
+	{ XK_space,         ShiftMask|Mod1Mask,    "\033\043", 0,    0},
+	// { XK_space,         ShiftMask|Mod1Mask,    "", 0,    0},
 	{ XK_space,         ControlMask|Mod1Mask,  "\033\043", 0,    0},
     // ----------
 
