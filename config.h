@@ -436,7 +436,7 @@ static KeySym mappedkeys[] = {
 	XK_equal,
 	XK_minus,
 	XK_bar,
-	XK_backslash,
+	XK_question,
 	XK_braceleft,
 	XK_bracketleft,
 	XK_braceright,
@@ -637,6 +637,8 @@ static Key key[] = {
 	{ XK_braceright,    ControlMask|ShiftMask, "\037\135", 0,    0},
 	{ XK_bracketright,  ControlMask|Mod1Mask,  "",     0,    0},
     // ----------
+
+	{ XK_question,      ControlMask|ShiftMask, "\037\057", 0,    0},
 
     // ----------
 	// { XK_space,         Mod1Mask,         "\033\040",      0,    0},
