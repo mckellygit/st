@@ -438,9 +438,7 @@ static KeySym mappedkeys[] = {
 	XK_bar,
 	XK_question,
 	XK_braceleft,
-	XK_bracketleft,
 	XK_braceright,
-	XK_bracketright,
     // ----------
 };
 
@@ -633,9 +631,9 @@ static Key key[] = {
 
     // ----------
 	{ XK_braceleft,     ControlMask|ShiftMask, "\037\133", 0,    0},
-	{ XK_bracketleft,   ControlMask|Mod1Mask,  "",     0,    0},
+	// { XK_bracketleft,   ControlMask|Mod1Mask,  "",     0,    0},
 	{ XK_braceright,    ControlMask|ShiftMask, "\037\135", 0,    0},
-	{ XK_bracketright,  ControlMask|Mod1Mask,  "",     0,    0},
+	// { XK_bracketright,  ControlMask|Mod1Mask,  "",     0,    0},
     // ----------
 
 	{ XK_question,      ControlMask|ShiftMask, "\037\057", 0,    0},
